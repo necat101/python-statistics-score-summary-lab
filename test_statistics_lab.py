@@ -4,6 +4,7 @@
 import math
 import statistics
 import unittest
+from collections import Counter
 from fractions import Fraction
 
 
@@ -81,6 +82,13 @@ class TestQ3ModeMultimode(unittest.TestCase):
         self.assertEqual(mode_b, 9)
         self.assertEqual(multimode_b, [9, 8, 7])
         self.assertEqual(mode_b, multimode_b[0])
+
+        # Verify frequency maps are identical
+        counts_a = Counter(tied_a)
+        counts_b = Counter(tied_b)
+        self.assertEqual(counts_a, counts_b)
+        # Each value appears exactly twice
+        self.assertEqual(set(counts_a.values()), {2})
 
         # Ordering follows first encounter, not numeric sort
         self.assertNotEqual(multimode_a, multimode_b)

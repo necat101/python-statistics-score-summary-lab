@@ -3,6 +3,7 @@
 
 import math
 import statistics
+from collections import Counter
 from fractions import Fraction
 
 import cases
@@ -92,7 +93,8 @@ def run_q2():
         "name": "Q2 stdev vs pstdev (sample vs population)",
         "passed": passed,
         "details": {
-            "data": [float(x) for x in data],
+            "data": [str(x) for x in data],
+            "data_input_type": type(data[0]).__name__ if data else None,
             "n": n,
             "mean": str(mean_val),
             "pvariance": str(pvar),
@@ -130,11 +132,21 @@ def run_q3():
     b = check_one(cases.Q3_TIED_B, cases.Q3_TIED_B_EXPECT)
     single = check_one(cases.Q3_SINGLE, cases.Q3_SINGLE_EXPECT)
 
-    # Ties have equal counts, ordering follows first encounter, not numeric sort
-    tie_order_differs = a["multimode"] != b["multimode"]
-    tie_counts_equal = True  # by construction: each value appears twice
+    # Compute frequency maps and verify they are identical
+    counts_a = dict(Counter(cases.Q3_TIED_A))
+    counts_b = dict(Counter(cases.Q3_TIED_B))
+    tie_counts_equal = counts_a == counts_b
 
-    passed = a["passed"] and b["passed"] and single["passed"] and tie_order_differs
+    # Ordering follows first encounter, not numeric sort
+    tie_order_differs = a["multimode"] != b["multimode"]
+
+    passed = (
+        a["passed"]
+        and b["passed"]
+        and single["passed"]
+        and tie_order_differs
+        and tie_counts_equal
+    )
 
     return {
         "name": "Q3 mode vs multimode (tied buckets)",
@@ -145,6 +157,8 @@ def run_q3():
             "single": single,
             "tie_order_differs_by_first_seen": tie_order_differs,
             "tie_counts_equal": tie_counts_equal,
+            "counts_a": counts_a,
+            "counts_b": counts_b,
         },
     }
 
